@@ -1,16 +1,46 @@
 # yt_dlp_gui_grabber
 
-A new Flutter project.
+Yt-DlpGuiGrabber is a lightweight and user-friendly GUI client for yt-dlp, designed specifically for beginners and non-technical users who want to download videos from YouTube and other platforms without using the command line.
 
-## Getting Started
+✨ Features
+✅ Clean, intuitive interface — no setup or coding knowledge required
 
-This project is a starting point for a Flutter application.
+📺 Download videos or audio (MP3/MP4/WebM) using just the link
 
-A few resources to get you started if this is your first Flutter project:
+🎧 Audio-only mode (great for music/podcasts)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+📁 Choose output directory and format
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+🚀 Built on top of the latest yt-dlp engine
+
+🌐 Supports playlists and channels
+
+🔄 Regular updates and easy upgrades to yt-dlp backend
+
+🔧 Tech Stack
+Language: Dart
+
+GUI Framework: Flutter
+
+Backend: yt-dlp (must be installed or bundled)
+
+🧠 Who’s It For?
+This app is ideal for:
+
+Users who want to download videos without typing commands
+
+People who find yt-dlp too complex but want the same power
+
+Students, casual users, or anyone looking for a no-fuss downloader
+
+🚀 Getting Started
+Clone the repo
+
+Install dependencies
+
+Run the app — that’s it!
+
+
+
+
+Yt-DlpGuiGrabber
