@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../methods/get_clipboard_method.dart';
+
 class CardView extends StatefulWidget {
   const CardView({super.key});
 
@@ -10,7 +12,9 @@ class CardView extends StatefulWidget {
 
 class _CardViewState extends State<CardView> {
   final PageController _pageController = PageController();
-  final int _numPages = 2; // Example: 3 cards/pages
+  final int _numPages = 2;
+  final TextEditingController _textEditingController = TextEditingController();
+
 
   @override
   void dispose() {
@@ -61,7 +65,7 @@ class _CardViewState extends State<CardView> {
                                 horizontal: 30.0,
                               ),
                               child: Text(
-                                "Edit your preferences with the pencil icon",
+                                "Edit your downloads' preferences with the pencil icon",
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 16),
                               ),
@@ -73,6 +77,7 @@ class _CardViewState extends State<CardView> {
                                 horizontal: 20.0,
                               ),
                               child: TextFormField(
+                                controller: _textEditingController,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: "Enter link",
@@ -82,16 +87,22 @@ class _CardViewState extends State<CardView> {
                                     onPressed: () {},
                                   ),
                                 ),
-                                onSaved: (value) {},
+                                onSaved: (value) {
+
+                                },
                               ),
                             ),
 
                             const SizedBox(height: 10),
 
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                String? clipboardData = await getClipboardData();
+                                _textEditingController.text = clipboardData!;
+                              },
                               child: const Text("Get link from clipboard"),
                             ),
+
 
                             const SizedBox(height: 10),
 
