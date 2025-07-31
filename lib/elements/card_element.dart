@@ -23,7 +23,7 @@ class _CardViewState extends State<CardView> {
     return Column(
       children: [
         SizedBox(
-          height: 300,
+          height: 360,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _numPages,
@@ -31,9 +31,7 @@ class _CardViewState extends State<CardView> {
               // Each page of the PageView will be a Card
               if (index == 0) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Card(
@@ -59,12 +57,56 @@ class _CardViewState extends State<CardView> {
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                              ),
                               child: Text(
                                 "Edit your preferences with the pencil icon",
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 16),
                               ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: "Enter link",
+                                  hintText: "Enter a valid link",
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                onSaved: (value) {},
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text("Get link from clipboard"),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            FilledButton.icon(
+                              style: FilledButton.styleFrom(
+                                elevation: 5,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0),
+                                  ), // Rounded corners
+                                ),
+                              ),
+                              onPressed: () {},
+                              label: const Text("Download"),
+                              icon: const Icon(Icons.download_outlined),
                             ),
                           ],
                         ),
@@ -74,9 +116,7 @@ class _CardViewState extends State<CardView> {
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Card(
@@ -102,7 +142,9 @@ class _CardViewState extends State<CardView> {
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                              ),
                               child: Text(
                                 "Add a tag to an existing download (Audio only)",
                                 textAlign: TextAlign.center,

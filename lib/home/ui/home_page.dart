@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../elements/card_element.dart';
+import '../../elements/card_element.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -32,7 +32,11 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 30.0),
+              const SizedBox(height: 15.0),
+
+              Divider(),
+
+              const SizedBox(height: 15.0),
 
               Expanded(child: CardView()),
             ],
