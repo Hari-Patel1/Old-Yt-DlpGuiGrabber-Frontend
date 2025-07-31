@@ -22,7 +22,8 @@ class _CardViewState extends State<CardView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
+        SizedBox(
+          height: 300,
           child: PageView.builder(
             controller: _pageController,
             itemCount: _numPages,
