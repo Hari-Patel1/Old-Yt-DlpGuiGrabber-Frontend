@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:yt_dlp_gui_grabber/elements/dialog_element.dart';
 
 import '../methods/get_clipboard_method.dart';
 
@@ -84,7 +85,14 @@ class _CardViewState extends State<CardView> {
                                   hintText: "Enter a valid link",
                                   suffixIcon: IconButton(
                                     icon: const Icon(Icons.edit_outlined),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return const EditDialog();
+                                        },
+                                      );
+                                    },
                                   ),
                                 ),
                                 onSaved: (value) {
