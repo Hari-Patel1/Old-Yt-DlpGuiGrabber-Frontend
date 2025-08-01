@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart';
+import 'package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart';
 
 import '../elements/edit_dialog_element.dart';
 
@@ -47,8 +48,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const Spacer(),
-                    IconButton(
-                      onPressed: () {},
+                    IconButton.outlined(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => const EditSettingsDialog(),
+                        );
+                      },
                       icon: const Icon(Icons.settings_outlined),
                     ),
                   ],
@@ -62,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 360,
+                        height: 375,
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: _numPages,
@@ -173,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                       child: const Text("Get link from clipboard"),
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
                     FilledButton.icon(
                       style: FilledButton.styleFrom(
@@ -183,11 +189,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onPressed: () {
-                        // Implement download logic
+                          print(state.url);
                       },
                       label: const Text("Download"),
                       icon: const Icon(Icons.download_outlined),
                     ),
+                    const SizedBox(height: 10),
                   ],
                 );
               },
