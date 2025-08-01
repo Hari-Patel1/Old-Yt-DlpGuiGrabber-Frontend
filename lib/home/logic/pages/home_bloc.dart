@@ -10,6 +10,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<FetchUrlFromClipboard>(_onFetchUrlFromClipboard);
     on<SetUrl>(_onSetUrl);
     on<UpdatePreferences>(_onUpdatePreferences);
+    on<DownloadSubmitted>(_onDownloadSubmitted);
   }
 
   Future<void> _onFetchUrlFromClipboard(
@@ -32,5 +33,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit,
       ) async {
 
+  }
+
+  Future<void> _onDownloadSubmitted(
+      DownloadSubmitted event,
+      Emitter<HomeState> emit,
+      ) async {
+    print(event.url);
   }
 }

@@ -189,7 +189,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onPressed: () {
-                          print(state.url);
+                        context.read<HomeBloc>().add(
+                          DownloadSubmitted(state.url ?? ""),
+                        );
                       },
                       label: const Text("Download"),
                       icon: const Icon(Icons.download_outlined),
