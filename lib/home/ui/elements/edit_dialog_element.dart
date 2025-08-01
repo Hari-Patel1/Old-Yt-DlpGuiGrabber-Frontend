@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class EditDialog extends StatefulWidget {
-  const EditDialog({super.key});
+class EditPreferencesDialog extends StatefulWidget {
+  const EditPreferencesDialog({super.key});
 
   @override
-  State<EditDialog> createState() => _EditDialogState();
+  State<EditPreferencesDialog> createState() => _EditPreferencesDialogState();
 }
 
-class _EditDialogState extends State<EditDialog> {
+class _EditPreferencesDialogState extends State<EditPreferencesDialog> {
   String selectedExtension = ' mp4';
   String selectedAudioQuality = ' 320k';
   String selectedVideoQuality = ' 1080p';
@@ -20,6 +21,38 @@ class _EditDialogState extends State<EditDialog> {
   final List<String> extensionOptions = [' mp4', ' webm', ' mkv', ' mp3'];
   final List<String> audioQualityOptions = [' 320k', ' 256k', ' 192k', ' 128k'];
   final List<String> videoQualityOptions = [' 2160p', ' 1440p', ' 1080p', ' 720p', ' 480p'];
+
+  @override
+  void initState() {
+    super.initState();
+    loadPreferences();
+  }
+
+  Future<void> loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      selectedExtension = prefs.getString('extension') ?? ' mp4';
+      audioOnly = prefs.getBool('audioOnly') ?? false;
+      selectedAudioQuality = prefs.getString('audioQuality') ?? ' 320k';
+      selectedVideoQuality = prefs.getString('videoQuality') ?? ' 1080p';
+      embedThumbnail = prefs.getBool('embedThumbnail') ?? true;
+      downloadAlbumArt = prefs.getBool('downloadAlbumArt') ?? true;
+      addMetadata = prefs.getBool('addMetadata') ?? true;
+    });
+  }
+
+  Future<void> savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('extension', selectedExtension);
+    await prefs.setBool('audioOnly', audioOnly);
+    await prefs.setString('audioQuality', selectedAudioQuality);
+    await prefs.setString('videoQuality', selectedVideoQuality);
+    await prefs.setBool('embedThumbnail', embedThumbnail);
+    await prefs.setBool('downloadAlbumArt', downloadAlbumArt);
+    await prefs.setBool('addMetadata', addMetadata);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,31 +87,28 @@ class _EditDialogState extends State<EditDialog> {
               dense: true,
             ),
 
-            if (audioOnly) ...[
-              const SizedBox(height: 8),
-              const Text("• Audio Quality", style: TextStyle(fontWeight: FontWeight.bold)),
-              DropdownButton<String>(
-                isExpanded: true,
-                value: selectedAudioQuality,
-                onChanged: (value) => setState(() => selectedAudioQuality = value!),
-                items: audioQualityOptions.map((quality) => DropdownMenuItem(
-                  value: quality,
-                  child: Text(quality),
-                )).toList(),
-              ),
-            ] else ...[
-              const SizedBox(height: 8),
-              const Text("• Video Resolution", style: TextStyle(fontWeight: FontWeight.bold)),
-              DropdownButton<String>(
-                isExpanded: true,
-                value: selectedVideoQuality,
-                onChanged: (value) => setState(() => selectedVideoQuality = value!),
-                items: videoQualityOptions.map((res) => DropdownMenuItem(
-                  value: res,
-                  child: Text(res),
-                )).toList(),
-              ),
-            ],
+            const SizedBox(height: 8),
+            Text(audioOnly ? "• Audio Quality" : "• Video Resolution",
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            DropdownButton<String>(
+              isExpanded: true,
+              value: audioOnly ? selectedAudioQuality : selectedVideoQuality,
+              onChanged: (value) {
+                setState(() {
+                  if (audioOnly) {
+                    selectedAudioQuality = value!;
+                  } else {
+                    selectedVideoQuality = value!;
+                  }
+                });
+              },
+              items: (audioOnly ? audioQualityOptions : videoQualityOptions)
+                  .map((option) => DropdownMenuItem(
+                value: option,
+                child: Text(option),
+              ))
+                  .toList(),
+            ),
 
             const SizedBox(height: 12),
             CheckboxListTile(
@@ -113,16 +143,9 @@ class _EditDialogState extends State<EditDialog> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         FilledButton(
-          onPressed: () {
-            Navigator.of(context).pop({
-              "extension": selectedExtension,
-              "audioOnly": audioOnly,
-              "audioQuality": selectedAudioQuality,
-              "videoQuality": selectedVideoQuality,
-              "embedThumbnail": embedThumbnail,
-              "downloadAlbumArt": downloadAlbumArt,
-              "addMetadata": addMetadata,
-            });
+          onPressed: () async {
+            await savePreferences(); // Save before closing
+            Navigator.of(context).pop(); // Close dialog
           },
           child: const Text("Save"),
         ),
