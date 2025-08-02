@@ -1,8 +1,8 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_folder_picker/FolderPicker.dart';
-import '../../logic/elements/settings_bloc.dart';
+import "dart:io";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:easy_folder_picker/FolderPicker.dart";
+import "../../logic/elements/settings_bloc.dart";
 
 class EditSettingsDialog extends StatelessWidget {
   const EditSettingsDialog({super.key});

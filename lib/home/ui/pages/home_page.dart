@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart';
-import 'package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart';
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:smooth_page_indicator/smooth_page_indicator.dart";
+import "package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart";
+import "package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart";
 
-import '../elements/edit_dialog_element.dart';
+import "../elements/edit_dialog_element.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -123,8 +123,8 @@ class _HomePageState extends State<HomePage> {
               buildWhen: (previous, current) => previous.url != current.url,
               builder: (context, state) {
                 // update text editing controller if url changes
-                if (_textEditingController.text != (state.url ?? '')) {
-                  _textEditingController.text = state.url ?? '';
+                if (_textEditingController.text != (state.url ?? "")) {
+                  _textEditingController.text = state.url ?? "";
                   _textEditingController.selection = TextSelection.collapsed(
                     offset: _textEditingController.text.length,
                   );

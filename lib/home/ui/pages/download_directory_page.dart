@@ -1,8 +1,8 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:easy_folder_picker/FolderPicker.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:easy_folder_picker/FolderPicker.dart";
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
 class DirectoryPickerDialog extends StatefulWidget {
   const DirectoryPickerDialog({super.key});
@@ -23,7 +23,7 @@ class _DirectoryPickerDialogState extends State<DirectoryPickerDialog> {
 
   Future<void> _loadSavedDirectory() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedPath = prefs.getString('download_directory');
+    final savedPath = prefs.getString("download_directory");
     if (savedPath != null && Directory(savedPath).existsSync()) {
       selectedDirectory = Directory(savedPath);
     }
@@ -44,7 +44,7 @@ class _DirectoryPickerDialogState extends State<DirectoryPickerDialog> {
 
     if (newDirectory != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('download_directory', newDirectory.path);
+      await prefs.setString("download_directory", newDirectory.path);
       setState(() {
         selectedDirectory = newDirectory;
       });
