@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart';
-import 'package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart';
-
-import '../elements/edit_dialog_element.dart';
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:smooth_page_indicator/smooth_page_indicator.dart";
+import "package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart";
+import "package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart";
+import "../elements/edit_dialog_element.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -63,12 +62,12 @@ class _HomePageState extends State<HomePage> {
                 const Divider(),
                 const SizedBox(height: 15.0),
 
-                // PAGEVIEW
+                // PAGEVIEW + Indicator + Logs
                 Expanded(
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 375,
+                        height: 475,
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: _numPages,
@@ -81,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-
+                      const SizedBox(height: 20),
                       SmoothPageIndicator(
                         controller: _pageController,
                         count: _numPages,
@@ -94,7 +93,41 @@ class _HomePageState extends State<HomePage> {
                           expansionFactor: 2,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
+
+                      // LOG OUTPUT BOX
+                      Expanded(
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          thickness: 5.0,
+                          radius: const Radius.circular(15.0),
+                          interactive: true,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: Colors.grey.shade800),
+                            ),
+                            child: BlocBuilder<HomeBloc, HomeState>(
+                              builder: (context, state) {
+                                return SingleChildScrollView(
+                                  reverse: true,
+                                  child: Text(
+                                    state.logOutput,
+                                    style: const TextStyle(
+                                      color: Colors.greenAccent,
+                                      fontFamily: 'Courier',
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -123,8 +156,8 @@ class _HomePageState extends State<HomePage> {
               buildWhen: (previous, current) => previous.url != current.url,
               builder: (context, state) {
                 // update text editing controller if url changes
-                if (_textEditingController.text != (state.url ?? '')) {
-                  _textEditingController.text = state.url ?? '';
+                if (_textEditingController.text != (state.url)) {
+                  _textEditingController.text = state.url;
                   _textEditingController.selection = TextSelection.collapsed(
                     offset: _textEditingController.text.length,
                   );
@@ -190,12 +223,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onPressed: () {
                         context.read<HomeBloc>().add(
-                          DownloadSubmitted(state.url ?? ""),
+                          DownloadSubmitted(state.url),
                         );
                       },
                       label: const Text("Download"),
                       icon: const Icon(Icons.download_outlined),
                     ),
+
                     const SizedBox(height: 10),
                   ],
                 );

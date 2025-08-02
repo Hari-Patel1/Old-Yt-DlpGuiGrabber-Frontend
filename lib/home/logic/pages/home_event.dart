@@ -19,14 +19,14 @@ class SetUrl extends HomeEvent {
 
 class UpdatePreferences extends HomeEvent {
   const UpdatePreferences(
-    this.selectedExtension,
-    this.audioOnly,
-    this.selectedAudioQuality,
-    this.selectedVideoQuality,
-    this.embedThumbnail,
-    this.downloadAlbumArt,
-    this.addMetadata,
-  );
+      this.selectedExtension,
+      this.audioOnly,
+      this.selectedAudioQuality,
+      this.selectedVideoQuality,
+      this.embedThumbnail,
+      this.downloadAlbumArt,
+      this.addMetadata,
+      );
 
   final String selectedExtension;
   final bool audioOnly;
@@ -54,4 +54,16 @@ class DownloadSubmitted extends HomeEvent {
 
   @override
   List<Object?> get props => [url];
+}
+
+class LogAppended extends HomeEvent {
+  final String message;
+  const LogAppended(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ClearLog extends HomeEvent {
+  const ClearLog();
 }

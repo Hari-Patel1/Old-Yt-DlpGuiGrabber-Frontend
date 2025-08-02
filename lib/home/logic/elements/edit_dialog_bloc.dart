@@ -1,9 +1,9 @@
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import "package:bloc/bloc.dart";
+import "package:equatable/equatable.dart";
+import "package:shared_preferences/shared_preferences.dart";
 
-part 'edit_dialog_event.dart';
-part 'edit_dialog_state.dart';
+part "edit_dialog_event.dart";
+part "edit_dialog_state.dart";
 
 class EditDialogBloc extends Bloc<EditDialogEvent, EditDialogState> {
   EditDialogBloc() : super(const EditDialogState()) {
@@ -24,13 +24,13 @@ class EditDialogBloc extends Bloc<EditDialogEvent, EditDialogState> {
       ) async {
     final prefs = await SharedPreferences.getInstance();
     emit(EditDialogState(
-      selectedExtension: prefs.getString('extension') ?? 'mp4',
-      audioOnly: prefs.getBool('audioOnly') ?? false,
-      selectedAudioQuality: prefs.getString('audioQuality') ?? '320k',
-      selectedVideoQuality: prefs.getString('videoQuality') ?? '1080p',
-      embedThumbnail: prefs.getBool('embedThumbnail') ?? true,
-      downloadAlbumArt: prefs.getBool('downloadAlbumArt') ?? true,
-      addMetadata: prefs.getBool('addMetadata') ?? true,
+      selectedExtension: prefs.getString("extension") ?? "mp4",
+      audioOnly: prefs.getBool("audioOnly") ?? false,
+      selectedAudioQuality: prefs.getString("audioQuality") ?? "320k",
+      selectedVideoQuality: prefs.getString("videoQuality") ?? "1080p",
+      embedThumbnail: prefs.getBool("embedThumbnail") ?? true,
+      downloadAlbumArt: prefs.getBool("downloadAlbumArt") ?? true,
+      addMetadata: prefs.getBool("addMetadata") ?? true,
     ));
   }
 
@@ -64,12 +64,12 @@ class EditDialogBloc extends Bloc<EditDialogEvent, EditDialogState> {
 
   Future<void> _onSavePreferences(SavePreferences event, Emitter<EditDialogState> emit) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('extension', state.selectedExtension);
-    await prefs.setBool('audioOnly', state.audioOnly);
-    await prefs.setString('audioQuality', state.selectedAudioQuality);
-    await prefs.setString('videoQuality', state.selectedVideoQuality);
-    await prefs.setBool('embedThumbnail', state.embedThumbnail);
-    await prefs.setBool('downloadAlbumArt', state.downloadAlbumArt);
-    await prefs.setBool('addMetadata', state.addMetadata);
+    await prefs.setString("extension", state.selectedExtension);
+    await prefs.setBool("audioOnly", state.audioOnly);
+    await prefs.setString("audioQuality", state.selectedAudioQuality);
+    await prefs.setString("videoQuality", state.selectedVideoQuality);
+    await prefs.setBool("embedThumbnail", state.embedThumbnail);
+    await prefs.setBool("downloadAlbumArt", state.downloadAlbumArt);
+    await prefs.setBool("addMetadata", state.addMetadata);
   }
 }

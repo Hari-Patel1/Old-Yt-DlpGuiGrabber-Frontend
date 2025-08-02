@@ -1,11 +1,25 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_folder_picker/FolderPicker.dart';
-import '../../logic/elements/settings_bloc.dart';
+import "dart:io";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:easy_folder_picker/FolderPicker.dart";
+import "../../logic/elements/settings_bloc.dart";
 
 class EditSettingsDialog extends StatelessWidget {
   const EditSettingsDialog({super.key});
+
+  // Helper to get platform fallback downloads folder
+  Directory _getFallbackDownloadsDirectory() {
+    if (Platform.isAndroid) {
+      return Directory("/storage/emulated/0/Download");
+    } else if (Platform.isWindows) {
+      final userProfile = Platform.environment['USERPROFILE'] ?? '';
+      return Directory("$userProfile\\Downloads");
+    } else if (Platform.isLinux || Platform.isMacOS) {
+      final home = Platform.environment['HOME'] ?? '';
+      return Directory("$home/Downloads");
+    }
+    return Directory.current;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,22 +31,32 @@ class EditSettingsDialog extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
+          final downloadDir =
+              state.downloadDirectory ?? _getFallbackDownloadsDirectory();
+
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(17.5),
+            ),
             insetPadding: const EdgeInsets.all(24),
             content: Padding(
               padding: const EdgeInsets.only(top: 24.0, left: 20, right: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text("App Settings", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "App Settings",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 16),
 
                   SwitchListTile(
                     title: const Text("Enable Notifications"),
                     value: state.notificationsEnabled,
                     onChanged: (value) {
-                      context.read<SettingsBloc>().add(ToggleNotifications(value));
+                      context.read<SettingsBloc>().add(
+                        ToggleNotifications(value),
+                      );
                     },
                     secondary: const Icon(Icons.notifications_active_outlined),
                     contentPadding: EdgeInsets.zero,
@@ -42,17 +66,21 @@ class EditSettingsDialog extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.snippet_folder_outlined),
                     title: const Text("Change download directory"),
-                    subtitle: Text(state.downloadDirectory?.path ?? "Not selected"),
+                    subtitle: Text(downloadDir.path),
                     onTap: () async {
                       final newDir = await FolderPicker.pick(
                         context: context,
-                        rootDirectory: state.downloadDirectory ?? Directory(FolderPicker.rootPath),
+                        rootDirectory: downloadDir,
                         allowFolderCreation: true,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       );
                       if (newDir != null) {
-                        context.read<SettingsBloc>().add(SetDownloadDirectory(newDir));
-                        Navigator.of(context).pop(newDir.path);
+                        context.read<SettingsBloc>().add(
+                          SetDownloadDirectory(newDir),
+                        );
+                        // Don't pop dialog here so user can continue changing settings if needed
                       }
                     },
                   ),
@@ -83,7 +111,9 @@ class EditSettingsDialog extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Cache cleared successfully!")),
+                        const SnackBar(
+                          content: Text("Cache cleared successfully!"),
+                        ),
                       );
                     },
                   ),

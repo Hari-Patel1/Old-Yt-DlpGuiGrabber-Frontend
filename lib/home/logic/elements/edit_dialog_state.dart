@@ -1,4 +1,4 @@
-part of 'edit_dialog_bloc.dart';
+part of "edit_dialog_bloc.dart";
 
 class EditDialogState extends Equatable {
   final String selectedExtension;
@@ -10,10 +10,10 @@ class EditDialogState extends Equatable {
   final bool addMetadata;
 
   const EditDialogState({
-    this.selectedExtension = 'mp4',
+    this.selectedExtension = "mp4",
     this.audioOnly = false,
-    this.selectedAudioQuality = '320k',
-    this.selectedVideoQuality = '1080p',
+    this.selectedAudioQuality = "320k",
+    this.selectedVideoQuality = "1080p",
     this.embedThumbnail = true,
     this.downloadAlbumArt = true,
     this.addMetadata = true,

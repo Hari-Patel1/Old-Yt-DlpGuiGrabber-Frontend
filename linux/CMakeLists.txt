@@ -60,7 +60,7 @@ add_subdirectory("runner")
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
-# Only the install-generated bundle's copy of the executable will launch
+# Only the install-generated bundle"s copy of the executable will launch
 # correctly, since the resources must in the right relative locations. To avoid
 # people trying to run the unbundled copy, put it in a subdirectory instead of
 # the default top-level location.

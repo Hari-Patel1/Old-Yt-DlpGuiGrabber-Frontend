@@ -1,4 +1,4 @@
-part of 'edit_dialog_bloc.dart';
+part of "edit_dialog_bloc.dart";
 
 abstract class EditDialogEvent extends Equatable {
   const EditDialogEvent();
