@@ -80,7 +80,9 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 20),
+
+                      const SizedBox(height: 10),
+
                       SmoothPageIndicator(
                         controller: _pageController,
                         count: _numPages,
@@ -93,6 +95,7 @@ class _HomePageState extends State<HomePage> {
                           expansionFactor: 2,
                         ),
                       ),
+
                       const SizedBox(height: 10),
 
                       // LOG OUTPUT BOX
