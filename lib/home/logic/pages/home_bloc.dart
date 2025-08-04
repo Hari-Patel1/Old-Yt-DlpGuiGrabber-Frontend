@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "package:bloc/bloc.dart";
 import "package:equatable/equatable.dart";
 import "package:flutter/services.dart";
@@ -20,7 +22,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onFetchUrlFromClipboard(
-      FetchUrlFromClipboard event, Emitter<HomeState> emit) async {
+    FetchUrlFromClipboard event,
+    Emitter<HomeState> emit,
+  ) async {
     try {
       final data = await Clipboard.getData("text/plain");
       final clipboardText = data?.text ?? '';
@@ -36,7 +40,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onUpdatePreferences(
-      UpdatePreferences event, Emitter<HomeState> emit) async {
+    UpdatePreferences event,
+    Emitter<HomeState> emit,
+  ) async {
     // Optional: persist preferences if needed
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("extension", event.selectedExtension);
@@ -51,7 +57,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onDownloadSubmitted(
-      DownloadSubmitted event, Emitter<HomeState> emit) async {
+    DownloadSubmitted event,
+    Emitter<HomeState> emit,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
 
     final preferences = {
@@ -66,16 +74,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       "downloadDirectory": prefs.getString("download_directory"),
     };
 
-    emit(state.copyWith(
-      isDownloading: true,
-      logOutput: "${state.logOutput}[*] Starting download...\n",
-    ));
+    emit(
+      state.copyWith(
+        isDownloading: true,
+        logOutput: "${state.logOutput}[*] Sending download request...\n",
+      ),
+    );
+
+    add(LogAppended("[*] Download initiated for: ${event.url}\n"));
 
     try {
       final uri = Uri.parse("http://192.168.0.44:8000/download");
-      final request = http.Request('POST', uri)
-        ..headers['Content-Type'] = 'application/json'
-        ..body = jsonEncode(preferences);
+      final request =
+          http.Request('POST', uri)
+            ..headers['Content-Type'] = 'application/json'
+            ..body = jsonEncode(preferences);
 
       final streamedResponse = await request.send();
 
@@ -83,33 +96,91 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .transform(utf8.decoder)
           .transform(const LineSplitter());
 
+      String? clientId;
+      List<String> filesToDownload = [];
+
       await for (final line in lines) {
         if (line.startsWith('data: ')) {
           final jsonString = line.substring(6);
-
           try {
             final Map<String, dynamic> eventData = jsonDecode(jsonString);
             final message = eventData['message'] ?? '';
-            add(LogAppended("$message\n"));
+
+            if (eventData['type'] == 'download-ready') {
+              clientId = eventData['client_id'];
+              filesToDownload = List<String>.from(eventData['files'] ?? []);
+              add(LogAppended("[*] Files ready for download.\n [*] Beginning download.\n"));
+
+              await _downloadFilesFromServer(
+                clientId!,
+                filesToDownload,
+                prefs.getString("download_directory")!,
+                emit,
+              );
+            } else {
+              add(LogAppended("$message\n"));
+            }
           } catch (_) {
             add(LogAppended("$line\n"));
           }
         }
       }
 
-      emit(state.copyWith(
-        isDownloading: false,
-        logOutput: "${state.logOutput}[*] Download finished.\n",
-      ));
+      emit(
+        state.copyWith(
+          isDownloading: false,
+          logOutput: "${state.logOutput}[*] Download complete.\n",
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        isDownloading: false,
-        logOutput: "${state.logOutput}[!] Exception: $e\n",
-      ));
+      emit(
+        state.copyWith(
+          isDownloading: false,
+          logOutput: "${state.logOutput}[!] Exception: $e\n",
+        ),
+      );
     }
   }
 
-  Future<void> _onLogAppended(LogAppended event, Emitter<HomeState> emit) async {
+  Future<void> _downloadFilesFromServer(
+    String clientId,
+    List<String> filenames,
+    String targetDirectory,
+    Emitter<HomeState> emit,
+  ) async {
+    final dir = Directory(targetDirectory);
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
+
+    for (final filename in filenames) {
+      try {
+        final url = Uri.parse(
+          "http://192.168.0.44:8000/download/file/$clientId/$filename",
+        );
+        final response = await http.get(url);
+
+        if (response.statusCode == 200) {
+          final file = File('${dir.path}/$filename');
+          await file.writeAsBytes(response.bodyBytes);
+          add(LogAppended("[↓] Downloaded: $filename\n"));
+        } else {
+          add(
+            LogAppended(
+              "[!] Failed to fetch $filename (${response.statusCode})\n",
+            ),
+          );
+        }
+      } catch (e) {
+        add(LogAppended("[!] Error downloading $filename: $e\n"));
+      }
+    }
+  }
+
+  Future<void> _onLogAppended(
+    LogAppended event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(state.copyWith(logOutput: "${state.logOutput}${event.message}"));
   }
 
@@ -117,4 +188,3 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(logOutput: ""));
   }
 }
-
