@@ -254,25 +254,52 @@ class _HomePageState extends State<HomePage> {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(15.0)),
         ),
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Tag an existing download",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
-                child: Text(
-                  "Add a tag to an existing download (Audio only)",
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Tag an existing download",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
+                SizedBox(height: 30),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Text(
+                    "Add a tag to an existing download (Audio only)",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                SizedBox(height: 15),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 35.0),
+                  child: Text(
+                    "To begin a tag, select a target directory",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12.5),
+                  ),
+                ),
+
+                SizedBox(height: 25),
+
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    elevation: 5,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    ),
+                  ),
+                  onPressed: () {},
+                  label: const Text("Select Directory"),
+                  icon: const Icon(Icons.snippet_folder_outlined),
+                ),
+              ],
+            ),
           ),
         ),
       ),
