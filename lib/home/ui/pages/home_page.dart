@@ -1,8 +1,13 @@
+import "dart:io";
+
+import "package:easy_folder_picker/FolderPicker.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:smooth_page_indicator/smooth_page_indicator.dart";
 import "package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart";
 import "package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart";
+import "package:yt_dlp_gui_grabber/home/ui/pages/tag_audio_page.dart";
+import "../../logic/elements/settings_bloc.dart";
 import "../elements/edit_dialog_element.dart";
 
 class HomePage extends StatefulWidget {
@@ -16,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
   final int _numPages = 2;
   final TextEditingController _textEditingController = TextEditingController();
+  String? currentDirectory;
 
   @override
   void dispose() {
@@ -26,116 +32,110 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeBloc(),
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 30.0,
-              vertical: 25.0,
-            ),
-            child: Column(
-              children: [
-                Row(
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 25.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    "Welcome",
+                    style: TextStyle(
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton.outlined(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const EditSettingsDialog(),
+                      );
+                    },
+                    icon: const Icon(Icons.settings_outlined),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15.0),
+              const Divider(),
+              const SizedBox(height: 15.0),
+
+              // PAGEVIEW + Indicator + Logs
+              Expanded(
+                child: Column(
                   children: [
-                    const Text(
-                      "Welcome",
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton.outlined(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => const EditSettingsDialog(),
-                        );
-                      },
-                      icon: const Icon(Icons.settings_outlined),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15.0),
-                const Divider(),
-                const SizedBox(height: 15.0),
-
-                // PAGEVIEW + Indicator + Logs
-                Expanded(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 475,
-                        child: PageView.builder(
-                          controller: _pageController,
-                          itemCount: _numPages,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return _buildDownloadCard(context);
-                            } else {
-                              return _buildTagCard();
-                            }
-                          },
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      SmoothPageIndicator(
+                    SizedBox(
+                      height: 475,
+                      child: PageView.builder(
                         controller: _pageController,
-                        count: _numPages,
-                        effect: const ExpandingDotsEffect(
-                          dotWidth: 15,
-                          dotHeight: 15,
-                          spacing: 7,
-                          dotColor: Colors.grey,
-                          activeDotColor: Colors.green,
-                          expansionFactor: 2,
-                        ),
+                        itemCount: _numPages,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return _buildDownloadCard(context);
+                          } else {
+                            return _buildTagCard();
+                          }
+                        },
                       ),
+                    ),
 
-                      const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
-                      // LOG OUTPUT BOX
-                      Expanded(
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          thickness: 5.0,
-                          radius: const Radius.circular(15.0),
-                          interactive: true,
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12.0),
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(10.0),
-                              border: Border.all(color: Colors.grey.shade800),
-                            ),
-                            child: BlocBuilder<HomeBloc, HomeState>(
-                              builder: (context, state) {
-                                return SingleChildScrollView(
-                                  reverse: true,
-                                  child: Text(
-                                    state.logOutput,
-                                    style: const TextStyle(
-                                      color: Colors.greenAccent,
-                                      fontFamily: 'Courier',
-                                      fontSize: 13,
-                                    ),
+                    SmoothPageIndicator(
+                      controller: _pageController,
+                      count: _numPages,
+                      effect: const ExpandingDotsEffect(
+                        dotWidth: 15,
+                        dotHeight: 15,
+                        spacing: 7,
+                        dotColor: Colors.grey,
+                        activeDotColor: Colors.green,
+                        expansionFactor: 2,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // LOG OUTPUT BOX
+                    Expanded(
+                      child: Scrollbar(
+                        thumbVisibility: true,
+                        thickness: 5.0,
+                        radius: const Radius.circular(15.0),
+                        interactive: true,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(color: Colors.grey.shade800),
+                          ),
+                          child: BlocBuilder<HomeBloc, HomeState>(
+                            builder: (context, state) {
+                              return SingleChildScrollView(
+                                reverse: true,
+                                child: Text(
+                                  state.logOutput,
+                                  style: const TextStyle(
+                                    color: Colors.greenAccent,
+                                    fontFamily: 'Courier',
+                                    fontSize: 13,
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -285,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                SizedBox(height: 25),
+                SizedBox(height: 15),
 
                 FilledButton.icon(
                   style: FilledButton.styleFrom(
@@ -294,9 +294,64 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.all(Radius.circular(15.0)),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final rootDir =
+                        context.read<SettingsBloc>().state.downloadDirectory ??
+                        Directory("/storage/emulated/0/Download");
+
+                    final newDir = await FolderPicker.pick(
+                      context: context,
+                      rootDirectory: rootDir,
+                      allowFolderCreation: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    );
+
+                    if (newDir != null) {
+                      context.read<SettingsBloc>().add(
+                        SetDownloadDirectory(newDir),
+                      );
+                      context.read<HomeBloc>().add(
+                        LogAppended("[!] Selecting new directory.\n"),
+                      );
+                      context.read<HomeBloc>().add(
+                        LogAppended("[*] Selected directory: ${newDir.path}\n"),
+                      );
+                    }
+                  },
+
                   label: const Text("Select Directory"),
                   icon: const Icon(Icons.snippet_folder_outlined),
+                ),
+                SizedBox(height: 15),
+                BlocBuilder<SettingsBloc, SettingsState>(
+                  builder: (context, state) {
+                    final dirPath =
+                        state.downloadDirectory?.path ?? "Not selected";
+                    return Text(
+                      "Current directory: $dirPath",
+                      style: TextStyle(fontSize: 14),
+                    );
+                  },
+                ),
+                SizedBox(height: 15),
+
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    elevation: 5,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TagAudioPage()),
+                    );
+                  },
+                  label: const Text("Start Tagging"),
+                  icon: const Icon(Icons.queue_music_outlined),
                 ),
               ],
             ),
