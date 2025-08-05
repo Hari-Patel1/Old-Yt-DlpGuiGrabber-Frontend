@@ -30,6 +30,30 @@ class AutoTagPage extends StatelessWidget {
                 ),
 
                 SizedBox(height: 10),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 27.5),
+                  child: Row(
+                    children: [
+                      Text(
+                        "song title",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        "artist name",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 //next is the most fitting tag (album art and song tag for that file)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -141,7 +165,6 @@ class AutoTagPage extends StatelessWidget {
                         // on tap this should save the current information and go to the next song to be tagged
                       },
                     ),
-
                   ],
                 ),
               ],
