@@ -1,151 +1,210 @@
+import 'package:on_audio_query/on_audio_query.dart';
+
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../logic/pages/auto_tag_bloc.dart';
+
 
 class AutoTagPage extends StatelessWidget {
-  const AutoTagPage({super.key});
+  final List<SongModel> songs;
+
+  const AutoTagPage({super.key, required this.songs});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Auto Tag page")),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Divider(),
-                ),
-                //first top part of the page is the album art currently
-                //should fill the space of the screen
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    width: double.infinity,
-                    child: Card(
-                      child: Text("Album Art currently of target file"),
+    return BlocProvider(
+      create: (_) => AutoTagBloc()..add(LoadFiles(songs)),
+      child: Scaffold(
+        appBar: AppBar(title: const Text("Auto Tag page")),
+        body: SafeArea(
+          child: BlocBuilder<AutoTagBloc, AutoTagState>(
+            builder: (context, state) {
+              final bloc = context.read<AutoTagBloc>();
+
+              if (state.filesToTag.isEmpty) {
+                return const Center(child: Text("No files to tag."));
+              }
+
+              // Show loading indicator while fetching tags
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              // Display error if any
+              if (state.hasError) {
+                return Center(child: Text("Error: ${state.errorMessage}"));
+              }
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Divider(),
+                    // Album Art section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        width: double.infinity,
+                        child: Card(
+                          child: state.albumArt != null && state.albumArt!.isNotEmpty
+                              ? Image.memory(
+                            state.albumArt!,
+                            fit: BoxFit.cover,
+                          )
+                              : const Center(child: Text("No Album Art")),
+
+                        ),
+                      ),
                     ),
-                  ),
-                ),
 
-                SizedBox(height: 10),
-                //next is the most fitting tag (album art and song tag for that file)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: SizedBox(
-                    height: 75,
-                    width: double.infinity,
-                    child: Card(
-                      child: Text("Most Fitting Tag currently as it stands"),
-                    ),
-                  ),
-                ),
+                    const SizedBox(height: 10),
 
-                SizedBox(height: 10),
-
-                Scrollbar(
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: List.generate(10, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: SizedBox(
-                            height: 100,
-                            width: 100,
-                            child: Card(
-                              //on tap this should populate the album art of the users song with the album art on the card
-                              child: Center(
-                                child: Text(
-                                  "suggested Album Art ${index + 1}",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ),
+                    // Song title & artist
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 27.5),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              state.title.isNotEmpty ? state.title : "Unknown Title",
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              state.artist.isNotEmpty ? state.artist : "Unknown Artist",
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Most fitting tag placeholder (could be expanded)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: SizedBox(
+                        height: 75,
+                        width: double.infinity,
+                        child: Card(
+                          child: Center(
+                            child: Text(
+                              "Most Fitting Tag: ${state.suggestedTitle} - ${state.suggestedArtist}",
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Suggested Album Art horizontally scrollable cards
+                    Scrollbar(
+                      thumbVisibility: true,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: List.generate(10, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Card(
+                                  child: Center(
+                                    child: Text(
+                                      "Suggested Album Art ${index + 1}",
+                                      textAlign: TextAlign.center,
+                                      style:
+                                      const TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+
+                    // Buttons for manual edit and refresh
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            // TODO: Open manual edit dialog or page
+                          },
+                          child: const Text("Tap to manually edit"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Refresh suggestions by fetching tags again
+                            bloc.add(FetchTagsForCurrentFile());
+                          },
+                          child: const Text("Refresh"),
+                        ),
+                      ],
+                    ),
+
+                    // Suggested tags list (mock for now)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 10, // You may want to link this to your state
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text("Suggested Tag ${index + 1}"),
+                          subtitle: const Text("Album Art"),
+                          onTap: () {
+                            // TODO: Dispatch an event to update tag fields based on selected suggestion
+                            // Example:
+                            // bloc.add(UpdateTagField(title: "Title from suggestion"));
+                          },
                         );
-                      }),
+                      },
                     ),
-                  ),
-                ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        //on tap this should show the user the fields they can manually edit. these fields can also be used to search for the most fitting tag if thee user clicks refresh
-                      },
-                      child: const Text("Tap to manually edit"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        //on tap this should refresh the most fitting tag by searching again with the manually edited information
-                      },
-                      child: const Text("Refresh"),
+                    const Divider(),
+
+                    // Bottom action buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          child: const Text("Cancel"),
+                          onPressed: () {
+                            bloc.add(CancelTagging());
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        TextButton(
+                          child: const Text("Skip"),
+                          onPressed: () {
+                            bloc.add(SkipCurrentFile());
+                          },
+                        ),
+
+                        TextButton(
+                          child: const Text("Save"),
+                          onPressed: () {
+                            bloc.add(SaveCurrentTag());
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
-
-                //list of tags for the song name and artist and etc infomration
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount:
-                      10, // Change this to match the number of tag suggestions
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text("Suggested Tag ${index + 1}"),
-                      subtitle: const Text(
-                        "Album Art",
-                      ), // Or tag source / summary
-                      onTap: () {
-                        // TODO: Update only the text fields (title, artist, album, etc.)
-                        // DO NOT modify album art
-                        // Example (if using controllers or BLoC):
-                        // context.read<TagBloc>().add(ApplyTagEvent(index));
-                      },
-                    );
-                  },
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Divider(),
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextButton(
-                      child: const Text("Cancel"),
-                      onPressed: () {
-                        // on tap this should cancel the current song and go back to the previous page
-                      },
-                    ),
-
-                    TextButton(
-                      child: const Text("Skip"),
-                      onPressed: () {
-                        // on tap this should skip the current song and go to the next song to be tagged
-                      },
-                    ),
-
-                    TextButton(
-                      child: const Text("Save"),
-                      onPressed: () {
-                        // on tap this should save the current information and go to the next song to be tagged
-                      },
-                    ),
-
-                  ],
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
