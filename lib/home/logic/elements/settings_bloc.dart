@@ -11,7 +11,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<LoadSettings>(_onLoadSettings);
     on<ToggleNotifications>(_onToggleNotifications);
     on<SetDownloadDirectory>(_onSetDownloadDirectory);
+
+    add(LoadSettings());
   }
+
+
 
   Future<void> _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) async {
     final prefs = await SharedPreferences.getInstance();
@@ -40,3 +44,4 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     emit(state.copyWith(downloadDirectory: event.directory));
   }
 }
+
