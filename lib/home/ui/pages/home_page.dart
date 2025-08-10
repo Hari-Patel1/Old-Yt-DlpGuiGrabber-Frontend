@@ -6,7 +6,6 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "package:smooth_page_indicator/smooth_page_indicator.dart";
 import "package:yt_dlp_gui_grabber/home/logic/pages/home_bloc.dart";
 import "package:yt_dlp_gui_grabber/home/ui/elements/settings_dialog_element.dart";
-import "package:yt_dlp_gui_grabber/home/ui/pages/tag_audio_page.dart";
 import "../../logic/elements/settings_bloc.dart";
 import "../elements/edit_dialog_element.dart";
 
@@ -345,10 +344,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TagAudioPage()),
-                    );
+
                   },
                   label: const Text("Start Tagging"),
                   icon: const Icon(Icons.queue_music_outlined),
